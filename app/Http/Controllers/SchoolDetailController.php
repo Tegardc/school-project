@@ -53,6 +53,14 @@ class SchoolDetailController extends Controller
         }
         //
     }
+    public function getBySubDistrict($id)
+    {
+        $schoolDetails = school_detail::whereHas('schools', function ($query) use ($id) {
+            $query->where('subDistrictId', $id);
+        })->get();
+
+        return ResponseHelper::success($schoolDetails, 'School details by sub-district retrieved');
+    }
 
     /**
      * Display the specified resource.

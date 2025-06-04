@@ -22,16 +22,25 @@ class SchoolRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'provinceId' => ['sometimes', 'exists:provinces,id'],
-            'districtId' => ['sometimes', 'exists:districts,id'],
-            'subDistrictId' => ['sometimes', 'exists:sub_districts,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'provinceId' => ['required', 'exists:provinces,id'],
+            'districtId' => ['required', 'exists:districts,id'],
+            'subDistrictId' => ['required', 'exists:sub_districts,id'],
             'schoolEstablishmentDecree' => ['nullable', 'string', 'max:255'],
-            'imageUrl' => ['sometimes', 'array'],
-            'imageUrl.*' => ['url'],
-
+            // 'imageUrl' => ['sometimes', 'array'],
+            // 'imageUrl.*' => ['url'],
             //
         ];
+
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            $rules = [
+                'name' => ['nullable', 'string', 'max:255'],
+                'provinceId' => ['nullable', 'exists:provinces,id'],
+                'districtId' => ['nullable', 'exists:districts,id'],
+                'subDistrictId' => ['nullable', 'exists:sub_districts,id'],
+                'schoolEstablishmentDecree' => ['nullable', 'string', 'max:255'],
+            ];
+        }
         return $rules;
     }
 }

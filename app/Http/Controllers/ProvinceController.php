@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Province;
 use Illuminate\Http\Request;
 
@@ -12,8 +13,7 @@ class ProvinceController extends Controller
      */
     public function index()
     {
-        $province = Province::all();
-        return response()->json(['success' => true, 'data' => $province]);
+        return ResponseHelper::success(Province::all(), 'Success Display List Province');
         //
     }
 

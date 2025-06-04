@@ -48,7 +48,12 @@ class UserController extends Controller
 
     public function show(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user()->load([
+            'roles',
+            'childSchoolDetails.schools.province',
+            'childSchoolDetails.schools.district',
+            'childSchoolDetails.schools.subDistrict',
+        ]);
         return ResponseHelper::success(
             new UserResource($user),
             'Show Data Success'
@@ -78,7 +83,6 @@ class UserController extends Controller
             }
             $user->password = Hash::make($validated['new_password']);
         }
-
         $user->update($validated);
         $user->refresh();
         return ResponseHelper::success(

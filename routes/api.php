@@ -49,7 +49,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/reviews/{id}/reject', [ReviewController::class, 'reject']);
         Route::get('/review/pending-reviews', [ReviewController::class, 'pendingReviews']);
         Route::get('/review/rejected-reviews', [ReviewController::class, 'rejectedReviews']);
-        Route::get('/review/approved-reviews', [ReviewController::class, 'rejectedReviews']);
+        Route::get('/review/approved-reviews', [ReviewController::class, 'approvedReviews']);
     });
 });
 Route::post('/upload', [SchoolGalleryController::class, 'uploadFile']);
@@ -59,6 +59,10 @@ Route::apiResource('schools', SchoolController::class);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/provinces', [ProvinceController::class, 'index']);
+Route::get('/provinces/{provinceId}/districts', [DistrictController::class, 'getByProvince']);
+Route::get('/districts/{districtId}/sub-districts', [SubdistrictController::class, 'getByDistrict']);
+Route::get('/sub-districts/{subDistrictId}/school-details', [SchoolDetailController::class, 'getBySubDistrict']);
 
 // Route::get('/school', [SchoolController::class, 'index']);
 // Route::post('/school', [SchoolController::class, 'store']);

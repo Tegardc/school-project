@@ -9,7 +9,11 @@ use PDO;
 class Child extends Model
 {
     use HasFactory;
-    public $timestamps = false;
+    protected $table = 'childs';
+    public const CREATED_AT = 'createdAt';
+    public const UPDATED_AT = 'updatedAt';
+    protected $fillable = ['name', 'userId', 'nis', 'schoolDetailId'];
+    public $timestamps = true;
 
     public function parent()
     {

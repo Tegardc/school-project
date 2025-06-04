@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\SchoolRequest;
 use App\Http\Resources\SchoolResource;
 use App\Http\Resources\SchoolResourceCollection;
 use App\Models\School;
@@ -21,17 +22,10 @@ class SchoolController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(SchoolRequest $request)
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'provinceId' => 'required|exists:provinces,id',
-                'districtId' => 'required|exists:districts,id',
-                'subDistrictId' => 'required|exists:sub_districts,id',
-                'schoolEstablishmentDecree' => 'nullable|string|max:255'
-            ]);
-
+            $validated = $request->validated();
             $school = School::create($validated);
 
             return ResponseHelper::success(

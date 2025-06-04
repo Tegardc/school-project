@@ -56,7 +56,8 @@ class school_detail extends Model
     }
     public function reviews()
     {
-        return $this->hasMany(review::class, 'schoolDetailId');
+        return $this->hasMany(Review::class, 'schoolDetailId')
+            ->where('status', Review::STATUS_APPROVED);
     }
     public function schoolGallery()
     {

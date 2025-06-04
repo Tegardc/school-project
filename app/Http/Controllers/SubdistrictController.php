@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Subdistrict;
 use Illuminate\Http\Request;
 
@@ -16,6 +17,13 @@ class SubdistrictController extends Controller
         return response()->json(['success' => true, 'data' => $subdistrict]);
         //
     }
+    // SubDistrictController.php
+    public function getByDistrict($districtId)
+    {
+        $subDistricts = Subdistrict::where('districtId', $districtId)->get();
+        return ResponseHelper::success($subDistricts, 'Sub-districts retrieved');
+    }
+
 
     /**
      * Show the form for creating a new resource.

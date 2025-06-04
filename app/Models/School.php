@@ -31,11 +31,11 @@ class School extends Model
 
     public function province()
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(Province::class,  'provinceId', 'id');
     }
     public function district()
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(District::class,  'districtId', 'id');
     }
     public function subDistrict()
     {

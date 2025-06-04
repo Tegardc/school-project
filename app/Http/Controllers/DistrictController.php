@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Models\District;
 use Illuminate\Http\Request;
 
@@ -16,6 +17,11 @@ class DistrictController extends Controller
         return response()->json(['success' => true, 'data' => $district]);
 
         //
+    }
+    public function getByProvince($provinceId)
+    {
+        $districts = District::where('provinceId', $provinceId)->get();
+        return ResponseHelper::success($districts, 'Districts retrieved');
     }
 
     /**
