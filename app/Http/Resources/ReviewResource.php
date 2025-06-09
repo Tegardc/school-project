@@ -20,8 +20,8 @@ class ReviewResource extends JsonResource
             'rating' => $this->rating,
             'userId' => $this->userId,
             'schoolDetailId' => $this->schoolDetailId,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
+            // 'createdAt' => $this->createdAt,
+            // 'updatedAt' => $this->updatedAt,
         ];
     }
 }

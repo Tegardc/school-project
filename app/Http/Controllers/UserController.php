@@ -76,6 +76,7 @@ class UserController extends Controller
     public function update(UserRequest $request)
     {
         $user = $request->user();
+        $this->authorize('update', $user);
         $validated = $request->validated();
         if (!empty($validated['current_password']) && !empty($validated['new_password'])) {
             if (!Hash::check($validated['current_password'], $user->password)) {
@@ -83,6 +84,7 @@ class UserController extends Controller
             }
             $user->password = Hash::make($validated['new_password']);
         }
+
         $user->update($validated);
         $user->refresh();
         return ResponseHelper::success(

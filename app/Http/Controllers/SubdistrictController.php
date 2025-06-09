@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Models\Subdistrict;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubdistrictController extends Controller
 {
@@ -38,6 +39,32 @@ class SubdistrictController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'districtId' => 'required|exists:districts,id',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $subDistrict = Subdistrict::create([
+                'name' => $validated['name'],
+                'districtId' => $validated['districtId']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Add Successfully',
+                'data' => $subDistrict
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return ResponseHelper::error('Something went wrong: ' . $e->getMessage());
+        }
+
+
+
         //
     }
 
@@ -60,16 +87,36 @@ class SubdistrictController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Subdistrict $subdistrict)
+    public function update(Request $request, Subdistrict $subdistrict, $id)
     {
+        $subDistrict = Subdistrict::find($id);
+        if (!$subDistrict) {
+            return ResponseHelper::notFound('Sub District Not Found');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'districtId' => 'required|exists:districts,id'
+        ]);
+        $subDistrict->update($validated);
+
+        return ResponseHelper::success($subDistrict, 'Sub District Update Success');
         //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Subdistrict $subdistrict)
+    public function destroy($id)
     {
+        $subDistrict = Subdistrict::find($id);
+        if (!$subDistrict) {
+            return ResponseHelper::notFound('Sub District not found');
+        }
+
+        $subDistrict->delete();
+
+        return ResponseHelper::success(null, 'Sub District deleted successfully');
         //
     }
 }

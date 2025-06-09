@@ -49,7 +49,7 @@ class User extends Authenticatable
     }
     public function childSchoolDetails()
     {
-        return $this->belongsToMany(school_detail::class, 'user_child_school', 'userId', 'schoolDetailId')
+        return $this->belongsToMany(SchoolDetail::class, 'user_child_school', 'userId', 'schoolDetailId')
             ->withPivot('childId')->withTimestamps();
     }
 

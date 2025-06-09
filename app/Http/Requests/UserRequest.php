@@ -61,7 +61,7 @@ class UserRequest extends FormRequest
         ];
         if ($this->isStudent()) {
             $rules = array_merge($rules, [
-                'nis' => ['required', 'string'],
+                'nis' => ['required', 'string', 'unique:users,nis'],
                 'provinceId' => ['required', 'exists:provinces,id'],
                 'districtId' => ['required', 'exists:districts,id'],
                 'subDistrictId' => ['required', 'exists:sub_districts,id'],
@@ -72,7 +72,7 @@ class UserRequest extends FormRequest
         if ($this->isParent()) {
             $rules = array_merge($rules, [
                 'childName' => ['required', 'string'],
-                'nis' => ['required', 'string'],
+                'nis' => ['required', 'string', 'unique:childs,nis'],
                 'provinceId' => ['required', 'exists:provinces,id'],
                 'districtId' => ['required', 'exists:districts,id'],
                 'subDistrictId' => ['required', 'exists:sub_districts,id'],

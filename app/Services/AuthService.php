@@ -15,7 +15,6 @@ class AuthService
     public function register(array $data): User
     {
         return DB::transaction(function () use ($data) {
-            // Buat user baru
             $user = User::create([
                 'firstName' => $data['firstName'],
                 'lastName' => $data['lastName'],
@@ -27,7 +26,6 @@ class AuthService
             ]);
 
             $user->assignRole($data['role']);
-
             // Jika student
             if ($data['role'] === 'student') {
                 $user->update([

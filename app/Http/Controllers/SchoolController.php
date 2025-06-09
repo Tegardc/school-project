@@ -27,7 +27,6 @@ class SchoolController extends Controller
         try {
             $validated = $request->validated();
             $school = School::create($validated);
-
             return ResponseHelper::success(
                 new SchoolResource($school),
                 'Created Data Success'

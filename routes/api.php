@@ -34,17 +34,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/user', [UserController::class, 'update']);
     Route::delete('/user', [UserController::class, 'destroy']);
 
+    //ROUTE FOR USER ROLE//
     Route::middleware(['check.role:student,parent'])->group(function () {
         Route::post('/review/{schoolDetailId}', [ReviewController::class, 'store']);
     });
+
+    //ROUTE FOR USER ROLE//
     Route::middleware('check.role:admin')->group(function () {
-        Route::post('/schools', [SchoolController::class, 'store']);
-        Route::put('/school/{id}', [SchoolController::class, 'update']);
-        Route::delete('/school/{id}', [SchoolController::class, 'destroy']);
         Route::get('/users', [UserController::class, 'index']);
+        Route::post('/schools', [SchoolController::class, 'store']);
+        Route::put('/schools/{id}', [SchoolController::class, 'update']);
+        Route::delete('/schools/{id}', [SchoolController::class, 'destroy']);
+        Route::post('/school-details', [SchoolDetailController::class, 'store']);
         Route::put('/school-details/{id}', [SchoolDetailController::class, 'update']);
         Route::delete('/school-details/{id}', [SchoolDetailController::class, 'destroy']);
-        Route::post('/school-details', [SchoolDetailController::class, 'store']);
         Route::put('/reviews/{id}/approve', [ReviewController::class, 'approve']);
         Route::put('/reviews/{id}/reject', [ReviewController::class, 'reject']);
         Route::get('/review/pending-reviews', [ReviewController::class, 'pendingReviews']);
@@ -52,12 +55,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/review/approved-reviews', [ReviewController::class, 'approvedReviews']);
     });
 });
-Route::post('/upload', [SchoolGalleryController::class, 'uploadFile']);
-Route::get('/review/{schoolDetailId}', [ReviewController::class, 'index']);
-Route::delete('/review/{id}', [ReviewController::class, 'destroy']);
-Route::apiResource('schools', SchoolController::class);
+//ROUTE FOR EVERYONE//
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/schools', [SchoolController::class, 'index']);
+Route::post('/upload', [SchoolGalleryController::class, 'uploadFile']);
+Route::get('/review/{schoolDetailId}', [ReviewController::class, 'index']);
+// Route::delete('/review/{id}', [ReviewController::class, 'destroy']);
+// Route::apiResource('schools', SchoolController::class);
+
+// 
+
+Route::get('/school-details/filter', [SchoolDetailController::class, 'filter']);
 
 Route::get('/provinces', [ProvinceController::class, 'index']);
 Route::get('/provinces/{provinceId}/districts', [DistrictController::class, 'getByProvince']);
@@ -70,10 +79,22 @@ Route::get('/sub-districts/{subDistrictId}/school-details', [SchoolDetailControl
 // Route::put('/school/{id}', [SchoolController::class, 'update']);
 // Route::delete('/school/{id}', [SchoolController::class, 'destroy']);
 
-Route::get('/province', [ProvinceController::class, 'index']);
+Route::apiResource('province', ProvinceController::class);
+// Route::get('/province', [ProvinceController::class, 'index']);
+// Route::post('/province', [ProvinceController::class, 'store']);
+// Route::put('/province/{id}', [ProvinceController::class, 'update']);
+// Route::delete('/province/{id}', [ProvinceController::class, 'destroy']);
 Route::get('/district', [DistrictController::class, 'index']);
 Route::post('/district', [DistrictController::class, 'store']);
+Route::put('/district/{id}', [DistrictController::class, 'update']);
+Route::delete('/district/{id}', [DistrictController::class, 'destroy']);
+
 Route::get('/sub-district', [SubdistrictController::class, 'index']);
+Route::post('/sub-district', [SubdistrictController::class, 'store']);
+Route::put('/sub-district/{id}', [SubdistrictController::class, 'update']);
+Route::delete('/sub-district/{id}', [SubdistrictController::class, 'destroy']);
+
+
 
 Route::get('/school-details', [SchoolDetailController::class, 'index']);
 Route::get('/school-details/ranking', [SchoolDetailController::class, 'ranking']);

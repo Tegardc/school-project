@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Models\District;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class DistrictController extends Controller
 {
@@ -37,15 +39,24 @@ class DistrictController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(['name' => 'required|string', 'province_id' => 'required']);
-        $district = District::create(['name' => $validated['name'], 'province_id' => $validated['province_id']]);
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'provinceId' => 'required|exists:provinces,id'
+        ]);
+        DB::beginTransaction();
+        try {
+            $district = District::create(['name' => $validated['name'], 'provinceId' => $validated['provinceId']]);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Add Successfully', 'data' => [
+                'id' => $district->id,
+                'name' => $district->name,
+                'provinceId' => $district->provinceId
+            ]]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return ResponseHelper::error('Something went wrong: ' . $e->getMessage());
+        }
 
-        return response()->json(['success' => true, 'message' => 'Add Successfully', 'data' => [
-            'id' => $district->id,
-            'name' => $district->name,
-            'province_id' => $district->province_id
-
-        ]]);
         //
     }
 
@@ -68,16 +79,34 @@ class DistrictController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, District $district)
+    public function update(Request $request, District $district, $id)
     {
-        //
+        $district = District::find($id);
+        if (!$district) {
+            return ResponseHelper::notFound('District Not Found');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'provinceId' => 'required|exists:provinces,id'
+        ]);
+        $district->update($validated);
+
+        return ResponseHelper::success($district, 'District Update Success');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(District $district)
+    public function destroy($id)
     {
-        //
+        $district = District::find($id);
+        if (!$district) {
+            return ResponseHelper::notFound('District not found');
+        }
+
+        $district->delete();
+
+        return ResponseHelper::success(null, 'District deleted successfully');
     }
 }

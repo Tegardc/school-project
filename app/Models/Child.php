@@ -19,8 +19,8 @@ class Child extends Model
     {
         return $this->belongsTo(User::class, 'userId');
     }
-    public function school()
+    public function schoolDetails()
     {
-        return $this->belongsTo(school_detail::class, 'schoolDetailId');
+        return $this->belongsTo(SchoolDetail::class, 'schoolDetailId');
     }
 }

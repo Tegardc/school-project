@@ -24,9 +24,10 @@ class School extends Model
         'updatedAt'
 
     ];
-    public function school_detail()
+
+    public function schoolDetaisl()
     {
-        return $this->hasMany(school_detail::class);
+        return $this->hasMany(SchoolDetail::class);
     }
 
     public function province()

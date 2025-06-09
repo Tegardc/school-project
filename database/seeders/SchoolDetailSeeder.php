@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\school_detail;
 use Illuminate\Database\Seeder;
 use App\Models\SchoolDetail;
 
@@ -11,7 +10,7 @@ class SchoolDetailSeeder extends Seeder
     public function run(): void
     {
 
-        school_detail::create([
+        SchoolDetail::create([
             'name' => 'SMAN 1 Denpasar',
             'institutionCode' => 'INST001',
             'schoolId' => 1,

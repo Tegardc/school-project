@@ -8,7 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Child;
 use App\Models\User;
 use App\Services\AuthService;
-use Dotenv\Exception\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +48,11 @@ class AuthController extends Controller
                 'token' => $result['token'],
                 'expiresAt' => $result['expiresAt']
             ], 'Login Successfully');
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Login failed',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             return ResponseHelper::serverError('Failed to login user', $e, '[LOGIN]');
         }
