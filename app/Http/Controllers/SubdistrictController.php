@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\SubDistrictRequest;
+use App\Http\Resources\SubDistrictResource;
 use App\Models\Subdistrict;
+use App\Services\SubDistrictService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +18,7 @@ class SubdistrictController extends Controller
     public function index()
     {
         $subdistrict = SubDistrict::all();
-        return response()->json(['success' => true, 'data' => $subdistrict]);
+        return ResponseHelper::success(SubDistrictResource::collection($subdistrict), 'Successfully Display Data');
         //
     }
     // SubDistrictController.php
@@ -37,30 +40,16 @@ class SubdistrictController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SubDistrictRequest $request, SubDistrictService $service)
     {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'districtId' => 'required|exists:districts,id',
-        ]);
-
-        DB::beginTransaction();
         try {
-            $subDistrict = Subdistrict::create([
-                'name' => $validated['name'],
-                'districtId' => $validated['districtId']
-            ]);
-
+            $validated = $request->validated();
+            $subDistrict = $service->store($validated);
             DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Add Successfully',
-                'data' => $subDistrict
-            ]);
-        } catch (\Throwable $e) {
+            return ResponseHelper::created(new SubDistrictResource($subDistrict), 'Created Successfully');
+        } catch (\Exception $e) {
             DB::rollBack();
-            return ResponseHelper::error('Something went wrong: ' . $e->getMessage());
+            return ResponseHelper::error($e->getMessage());
         }
 
 
@@ -87,20 +76,19 @@ class SubdistrictController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Subdistrict $subdistrict, $id)
+    public function update(SubDistrictRequest $request, SubDistrictService $service, $id)
     {
-        $subDistrict = Subdistrict::find($id);
-        if (!$subDistrict) {
-            return ResponseHelper::notFound('Sub District Not Found');
+        try {
+            $validated = $request->validated();
+            $subDistrict = $service->update($validated, $id);
+            if (!$subDistrict) {
+                return ResponseHelper::notFound('Data Not Found');
+            }
+            return ResponseHelper::success(new SubDistrictResource($subDistrict), 'Sub District Update Success');
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage());
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'districtId' => 'required|exists:districts,id'
-        ]);
-        $subDistrict->update($validated);
-
-        return ResponseHelper::success($subDistrict, 'Sub District Update Success');
         //
     }
 

@@ -7,6 +7,7 @@ use App\Http\Requests\SchoolRequest;
 use App\Http\Resources\SchoolResource;
 use App\Http\Resources\SchoolResourceCollection;
 use App\Models\School;
+use App\Services\SchoolService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -22,11 +23,11 @@ class SchoolController extends Controller
         }
     }
 
-    public function store(SchoolRequest $request)
+    public function store(SchoolRequest $request, SchoolService $service)
     {
         try {
             $validated = $request->validated();
-            $school = School::create($validated);
+            $school = $service->store($validated);
             return ResponseHelper::success(
                 new SchoolResource($school),
                 'Created Data Success'

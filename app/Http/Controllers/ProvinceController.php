@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\ProvinceRequest;
+use App\Http\Resources\ProvinceResource;
 use App\Models\Province;
+use App\Services\ProvinceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,20 +17,23 @@ class ProvinceController extends Controller
      */
     public function index()
     {
-        return ResponseHelper::success(Province::all(), 'Success Display List Province');
+        $province = Province::all();
+        return ResponseHelper::success(ProvinceResource::collection($province), 'Success Display List Province');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProvinceRequest $request, ProvinceService $service)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'unique:provinces,name'],
-        ]);
+        try {
+            $validated = $request->validated();
+            $province = $service->store($validated);
 
-        $province = Province::create($validator->validated());
-        return ResponseHelper::success($province, 'Province Created Successfully');
+            return ResponseHelper::created(new ProvinceResource($province), 'Province Created Successfully');
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage());
+        }
     }
 
     /**
@@ -47,19 +53,19 @@ class ProvinceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(ProvinceRequest $request, ProvinceService $service, $id)
     {
-        $province = Province::find($id);
+        try {
+            $validated = $request->validated();
+            $province = $service->update($validated, $id);
+            if (!$province) {
+                return ResponseHelper::notFound('Data Not Found');
+            }
 
-        if (!$province) {
-            return ResponseHelper::notFound('Province Not Found');
+            return ResponseHelper::success(new ProvinceResource($province), 'Province Updated Successfully');
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage());
         }
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'unique:provinces,name,' . $province->id],
-        ]);
-
-        $province->update($validator->validated());
-        return ResponseHelper::success($province, 'Province Updated Successfully');
     }
 
     /**

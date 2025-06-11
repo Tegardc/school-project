@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\DistrictRequest;
+use App\Http\Resources\DistrictResource;
 use App\Models\District;
+use App\Services\DistrictService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,14 +19,14 @@ class DistrictController extends Controller
     public function index()
     {
         $district = District::all();
-        return response()->json(['success' => true, 'data' => $district]);
+        return ResponseHelper::success(DistrictResource::collection($district), 'Successfully Display Data');
 
         //
     }
     public function getByProvince($provinceId)
     {
         $districts = District::where('provinceId', $provinceId)->get();
-        return ResponseHelper::success($districts, 'Districts retrieved');
+        return ResponseHelper::success(new DistrictResource($districts), 'Districts retrieved');
     }
 
     /**
@@ -37,24 +40,16 @@ class DistrictController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DistrictRequest $request, DistrictService $service)
     {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'provinceId' => 'required|exists:provinces,id'
-        ]);
-        DB::beginTransaction();
         try {
-            $district = District::create(['name' => $validated['name'], 'provinceId' => $validated['provinceId']]);
+            $validated = $request->validated();
+            $district = $service->store($validated);
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Add Successfully', 'data' => [
-                'id' => $district->id,
-                'name' => $district->name,
-                'provinceId' => $district->provinceId
-            ]]);
-        } catch (\Throwable $e) {
+            return ResponseHelper::created(new DistrictResource($district), 'Created Successfully');
+        } catch (\Exception $e) {
             DB::rollBack();
-            return ResponseHelper::error('Something went wrong: ' . $e->getMessage());
+            return ResponseHelper::error($e->getMessage());
         }
 
         //
@@ -79,20 +74,18 @@ class DistrictController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, District $district, $id)
+    public function update(DistrictRequest $request, DistrictService $service, $id)
     {
-        $district = District::find($id);
-        if (!$district) {
-            return ResponseHelper::notFound('District Not Found');
+        try {
+            $validated = $request->validated();
+            $district = $service->update($validated, $id);
+            if (!$district) {
+                return ResponseHelper::notFound('Data Not Found');
+            }
+            return ResponseHelper::success(new DistrictResource($district), 'District Update Success');
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage());
         }
-
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'provinceId' => 'required|exists:provinces,id'
-        ]);
-        $district->update($validated);
-
-        return ResponseHelper::success($district, 'District Update Success');
     }
 
     /**
