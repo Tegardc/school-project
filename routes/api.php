@@ -1,6 +1,7 @@
     <?php
 
-    use App\Http\Controllers\AuthController;
+use App\Helpers\ResponseHelper;
+use App\Http\Controllers\AuthController;
     use App\Http\Controllers\DistrictController;
     use App\Http\Controllers\ProvinceController;
     use App\Http\Controllers\ReviewController;
@@ -27,7 +28,11 @@
     | be assigned to the "api" middleware group. Make something great!
     |
     */
-
+    Route::get('/health', function(){
+        return ResponseHelper::success([
+            'status' => 'ok'
+        ], "PRABOWO SAID: HIDUP JOKOWII!!!");
+    });
 
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/user', [UserController::class, 'show']);
